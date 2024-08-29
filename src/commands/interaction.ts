@@ -28,9 +28,10 @@ export async function runCommandInteraction(
         throw new Error(`/${interaction.commandName} not found`);
     }
 
-    const parameters = command.parameters
-        ? generateCommandCallbackParameters(interaction, command.parameters)
-        : {};
+    const parameters = generateCommandCallbackParameters(
+        interaction,
+        command.parameters ?? {},
+    );
 
     try {
         await command.execute({ interaction, parameters });
@@ -86,8 +87,9 @@ function generateCommandCallbackParameters<T extends Record<string, Parameter>>(
 ): InferParameterObject<T> {
     const parameter_entries = Object.entries(parameters).map(
         ([name, parameter]) => {
-            const option = interaction.options.get(name, parameter.required);
-            if (!option && parameter.required) {
+            const isRequired = !parameter.optional;
+            const option = interaction.options.get(name, isRequired);
+            if (!option && isRequired) {
                 throw new Error(
                     `Option ${name} was not provided, but is required`,
                 );

@@ -10,6 +10,7 @@ export default [
     ...tseslint.configs.recommended,
     {
         rules: {
+            "prefer-const": "off",
             "@typescript-eslint/no-explicit-any": "off",
         },
     },

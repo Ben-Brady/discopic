@@ -1,12 +1,7 @@
 import { Client, Events } from "discord.js";
-import { runButtonInteraction } from "./button.js";
-import { runModalSubmitInteraction } from "./modal.js";
 import { type Command, publishSlashCommands } from "./commands/index.js";
 import { type Intent, intoDiscordIntent } from "./enums/intents.js";
-import {
-    runAutocompleteInteraction,
-    runCommandInteraction,
-} from "./commands/interaction.js";
+import { runInteraction } from "./interactions/run.js";
 
 export async function runBot({
     token,
@@ -37,20 +32,7 @@ export async function runBot({
         console.log(`Invite Url: ${inviteUrl}`);
     });
 
-    client.on(Events.InteractionCreate, interation => {
-        try {
-            if (interation.isButton()) runButtonInteraction(interation);
-            if (interation.isModalSubmit())
-                runModalSubmitInteraction(interation);
-            if (interation.isChatInputCommand())
-                runCommandInteraction(interation);
-            if (interation.isAutocomplete())
-                runAutocompleteInteraction(interation);
-        } catch (err: unknown) {
-            console.log("Interaction Failed");
-            console.error(err);
-        }
-    });
+    client.on(Events.InteractionCreate, runInteraction);
 
     await publishSlashCommands(token, client_id, commands);
     await client.login(token);

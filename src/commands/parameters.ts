@@ -39,7 +39,7 @@ function applyGenericOptionMetadata<T extends ApplicationCommandOptionBase>(
 ) {
     option.setName(name);
     option.setDescription(parameter.description ?? "");
-    option.setRequired(parameter.required ?? false);
+    option.setRequired(!parameter.optional);
 }
 
 const bindBooleanOption = (
@@ -61,6 +61,7 @@ const bindIntegerOption = (
     command.addIntegerOption(option => {
         if (parameter.min !== undefined) option.setMinValue(parameter.min);
         if (parameter.max !== undefined) option.setMaxValue(parameter.max);
+
         applyGenericOptionMetadata(option, name, parameter);
         return option;
     });

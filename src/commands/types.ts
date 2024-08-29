@@ -1,15 +1,14 @@
 import {
+    CommandInteraction,
     type APIInteractionDataResolvedChannel,
     type APIRole,
     type AutocompleteInteraction,
-    type CommandInteraction,
     type GuildBasedChannel,
     type Role,
     type SlashCommandBuilder,
     type User,
 } from "discord.js";
 import type { ExtendedAttachment } from "../extensions/attachment.js";
-import type { ExtendedCommandInteraction } from "../extensions/command-interaction.js";
 
 export type CommandBuilder = Omit<
     SlashCommandBuilder,
@@ -21,8 +20,9 @@ export type Command<
 > = {
     name: string;
     description: string;
-    nsfw?: boolean;
-    parameters?: TParams;
+    nsfw: boolean;
+    serverOnly: boolean;
+    parameters: TParams;
     execute: (response: {
         interaction: CommandInteraction;
         parameters: InferParameterObject<TParams>;
@@ -45,7 +45,7 @@ export type Parameter =
 export type BaseParameter = {
     type: string;
     description: string;
-    required?: boolean;
+    optional?: boolean;
 };
 
 export type StringParameter = BaseParameter & {
@@ -101,10 +101,10 @@ export type InferParameterOptionality<
     TParam extends Parameter,
     TType,
 > = TParam extends {
-    required: true;
+    optional: true;
 }
-    ? TType
-    : TType | undefined;
+    ? TType | undefined
+    : TType;
 
 type ParameterInferLookup = {
     boolean: boolean;
@@ -135,14 +135,20 @@ export function createCommand<
     name: string;
     description: string;
     nsfw?: boolean;
+    serverOnly?: boolean;
     parameters?: TParams;
     execute: (response: {
-        interaction: ExtendedCommandInteraction;
+        interaction: CommandInteraction;
         parameters: InferParameterObject<TParams>;
     }) => Promise<unknown>;
 
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<unknown>;
     additional_data?: CommandBuilder;
 }): Command<TParams> {
-    return command;
+    return {
+        nsfw: command.nsfw ?? false,
+        serverOnly: command.serverOnly ?? false,
+        parameters: {} as TParams,
+        ...command,
+    };
 }

@@ -8,6 +8,7 @@ type InteractionHandler<T extends Interaction = Interaction> = (
 
 export class InteractionManger<T extends Interaction> {
     interaction_map: Map<string, InteractionHandler<T>>;
+
     constructor() {
         this.interaction_map = new Map();
     }
