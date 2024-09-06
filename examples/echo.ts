@@ -1,4 +1,4 @@
-import { runBot, createCommand } from "../src";
+import { createCommand, runBot } from "../src";
 
 const helloCommand = createCommand({
     name: "echo",
@@ -6,8 +6,8 @@ const helloCommand = createCommand({
     parameters: {
         text: {
             type: "string",
-            description: "The string to echo back"
-        }
+            description: "The string to echo back",
+        },
     },
     async execute({ interaction }) {
         interaction.reply("pong");

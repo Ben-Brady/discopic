@@ -1,4 +1,4 @@
-import { runBot, createCommand, ButtonSettings } from "../src";
+import { runBot, createCommand, ButtonSettings, reply } from "../src";
 
 const helloCommand = createCommand({
     name: "button",
@@ -12,7 +12,7 @@ const helloCommand = createCommand({
             },
         } satisfies ButtonSettings;
 
-        interaction.reply({
+        await reply(interaction, {
             content: "Here's a button",
             buttons: [helloButton],
         });

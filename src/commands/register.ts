@@ -8,17 +8,17 @@ import {
     assertValidCommandParameter,
 } from "../verify.js";
 
-export async function publishSlashCommands(
-    token: string,
-    client_id: string,
-    commands: Command<any>[],
-) {
-    // Sort for constency
-    commands = commands.sort((a, b) => a.name.localeCompare(b.name));
-
-    console.log(`Loading ${commands.length} application (/) commands:`);
-    commands.forEach(command => console.log(` - /${command.name}`));
-
+export async function publishSlashCommands({
+    token,
+    client_id,
+    commands,
+    logging,
+}: {
+    logging: boolean;
+    token: string;
+    client_id: string;
+    commands: Command<any>[];
+}) {
     commands.forEach(registerCommand);
 
     const rest = new REST({ version: "10" }).setToken(token);
@@ -33,7 +33,9 @@ export async function publishSlashCommands(
     if (lastUpload !== uploadJson) {
         await rest.put(Routes.applicationCommands(client_id), { body });
         setTempStore(storeKey, uploadJson);
-        console.log(" Succesfully published to discord");
+
+        if (logging)
+            console.log(`Updating ${commands.length} application commands...`);
     }
 }
 

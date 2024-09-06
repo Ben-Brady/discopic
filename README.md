@@ -4,4 +4,9 @@ Note: Commands are loaded client side, if a command hasn't updated try refreshin
 
 ## Enviroment Variables
 
-Use
+Use can use DISCORD_BOT_TOKEN or DISCORD_BOT_CLIENT_ID enviroment variables instead of passing to runBot,
+this helps to keep the confirugation out of your code.
+
+## Bot Introduction
+
+By default the bot will print text to the console whilst setting up, this can be disabled with runBot({introduction: false})

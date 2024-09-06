@@ -16,7 +16,6 @@ export const runInteraction = async (interation: Interaction) => {
         if (interation.isAutocomplete())
             await runAutocompleteInteraction(interation);
     } catch (err: unknown) {
-        console.log("Interaction Failed");
         console.error(err);
     }
 };
