@@ -132,8 +132,6 @@ const bindChannelOption = (
     name: string,
     parameter: ChannelParameter,
 ) => {
-    command.addNumberOption(option => option);
-
     command.addChannelOption(option => {
         if (parameter.allowedChannelTypes) {
             const channels = parameter.allowedChannelTypes.map(
