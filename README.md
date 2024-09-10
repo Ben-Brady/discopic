@@ -10,3 +10,7 @@ this helps to keep the confirugation out of your code.
 ## Bot Introduction
 
 By default the bot will print text to the console whilst setting up, this can be disabled with runBot({introduction: false})
+
+## Command Error
+
+If you need to error during a command, throw CommandFailedError and it will be returns to the user as a message.
