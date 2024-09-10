@@ -3,18 +3,13 @@ import { registerCommand } from "./interaction.js";
 import type { Command, CommandBuilder } from "./types.js";
 import { addOptionToCommand } from "./parameters.js";
 import { getTempStore, setTempStore } from "../utils/store.js";
-import {
-    assertValidCommandName,
-    assertValidCommandParameter,
-} from "../verify.js";
+import { assertValidCommandName, assertValidCommandParameter } from "../verify.js";
 
 export async function publishSlashCommands({
     token,
     client_id,
     commands,
-    logging,
 }: {
-    logging: boolean;
     token: string;
     client_id: string;
     commands: Command<any>[];
@@ -22,9 +17,7 @@ export async function publishSlashCommands({
     commands.forEach(registerCommand);
 
     const rest = new REST({ version: "10" }).setToken(token);
-    const body = commands
-        .map(command => createCommandObject(command))
-        .map(command => command.toJSON());
+    const body = commands.map(command => createCommandObject(command)).map(command => command.toJSON());
 
     const storeKey = `${client_id}-application-commands`;
     const uploadJson = JSON.stringify(body);
@@ -33,9 +26,6 @@ export async function publishSlashCommands({
     if (lastUpload !== uploadJson) {
         await rest.put(Routes.applicationCommands(client_id), { body });
         setTempStore(storeKey, uploadJson);
-
-        if (logging)
-            console.log(`Updating ${commands.length} application commands...`);
     }
 }
 
@@ -55,9 +45,7 @@ function createCommandObject(command: Command): CommandBuilder {
             assertValidCommandParameter(name);
         });
 
-        parameters.forEach(([name, parameter]) =>
-            addOptionToCommand(commandObj, name, parameter),
-        );
+        parameters.forEach(([name, parameter]) => addOptionToCommand(commandObj, name, parameter));
     }
 
     return commandObj;

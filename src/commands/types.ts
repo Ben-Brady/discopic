@@ -10,14 +10,9 @@ import {
 } from "discord.js";
 import type { ExtendedAttachment } from "../extensions/attachment.js";
 
-export type CommandBuilder = Omit<
-    SlashCommandBuilder,
-    "addSubcommand" | "addSubcommandGroup"
->;
+export type CommandBuilder = Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
 
-export type Command<
-    TParams extends Record<string, Parameter> = Record<string, Parameter>,
-> = {
+export type Command<TParams extends Record<string, Parameter> = Record<string, Parameter>> = {
     name: string;
     description: string;
     nsfw: boolean;
@@ -97,10 +92,7 @@ type ValidParameterChannelTypes =
     | "GuildForum"
     | "GuildMedia";
 
-export type InferParameterOptionality<
-    TParam extends Parameter,
-    TType,
-> = TParam extends {
+export type InferParameterOptionality<TParam extends Parameter, TType> = TParam extends {
     optional: true;
 }
     ? TType | undefined
@@ -117,21 +109,18 @@ type ParameterInferLookup = {
     attachment: ExtendedAttachment;
 };
 
-export type InferParameterType<T extends Parameter> =
-    T["type"] extends keyof ParameterInferLookup
-        ? ParameterInferLookup[T["type"]]
-        : never;
+export type CommandParameters = Record<string, ParameterType>;
+export type ParameterType = ParameterInferLookup[keyof ParameterInferLookup];
+
+export type InferParameterType<T extends Parameter> = T["type"] extends keyof ParameterInferLookup
+    ? ParameterInferLookup[T["type"]]
+    : never;
 
 export type InferParameterObject<T extends Record<string, Parameter>> = {
-    [Key in keyof T as Key]: InferParameterOptionality<
-        T[Key],
-        InferParameterType<T[Key]>
-    >;
+    [Key in keyof T as Key]: InferParameterOptionality<T[Key], InferParameterType<T[Key]>>;
 };
 
-export function createCommand<
-    TParams extends Record<string, Parameter>,
->(command: {
+export function createCommand<TParams extends Record<string, Parameter>>(command: {
     name: string;
     description: string;
     nsfw?: boolean;

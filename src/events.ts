@@ -100,7 +100,6 @@ export const getEvent = <T extends EventName>(name: T): EventValue<T> => eventsL
 export const registerEvents = (client: Client, events: EventHandlers) => {
     entries(events).map(([name, callback]) => {
         const event = getEvent(name);
-
         //@ts-expect-error, can't cast
         client.on(event, callback);
     });
