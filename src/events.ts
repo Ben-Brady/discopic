@@ -1,4 +1,4 @@
-import { Client, Events as EventsEnum, type ClientEvents, type ClientEvents as ClientEventsLookup } from "discord.js";
+import { Client, Events as EventsEnum, type ClientEvents as ClientEventsLookup } from "discord.js";
 import { entries } from "./utils/entires.js";
 
 const eventsLookup = {
@@ -94,17 +94,14 @@ type EventParameters<T extends EventName> = ClientEventsLookup[EventValue<T>] ex
     : ClientEventsLookup[EventValue<T>];
 export type EventCallback<TEvent extends EventName> = (...args: EventParameters<TEvent>) => Promise<void> | void;
 
-export type EventHandlers = Partial<{ [P in EventName]: EventCallback<P> | EventCallback<P>[] }>;
+export type EventHandlers = Partial<{ [P in EventName]: EventCallback<P> }>;
 export const getEvent = <T extends EventName>(name: T): EventValue<T> => eventsLookup[name];
 
 export const registerEvents = (client: Client, events: EventHandlers) => {
     entries(events).map(([name, callback]) => {
-        const callbacks = Array.isArray(callback) ? callback : [callback];
+        const event = getEvent(name);
 
-        callbacks.forEach(() => {
-            const event: keyof ClientEvents = getEvent(name);
-            const eventCallback = callback as any;
-            client.on(event, eventCallback);
-        });
+        //@ts-expect-error, can't cast
+        client.on(event, callback);
     });
 };
