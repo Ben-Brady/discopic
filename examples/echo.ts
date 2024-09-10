@@ -1,6 +1,6 @@
-import { createCommand, runBot } from "../src";
+import { createCommand, reply, runBot } from "../src";
 
-const helloCommand = createCommand({
+const echo = createCommand({
     name: "echo",
     description: "Echos your name",
     parameters: {
@@ -9,11 +9,11 @@ const helloCommand = createCommand({
             description: "The string to echo back",
         },
     },
-    async execute({ interaction }) {
-        interaction.reply("pong");
+    async execute({ interaction, parameters: { text } }) {
+        reply(interaction, text);
     },
 });
 
 runBot({
-    commands: [helloCommand],
+    commands: [echo],
 });

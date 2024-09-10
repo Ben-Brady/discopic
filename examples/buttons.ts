@@ -1,6 +1,6 @@
 import { runBot, createCommand, ButtonSettings, reply } from "../src";
 
-const helloCommand = createCommand({
+const button = createCommand({
     name: "button",
     description: "Creates a button",
     async execute({ interaction }) {
@@ -20,5 +20,5 @@ const helloCommand = createCommand({
 });
 
 runBot({
-    commands: [helloCommand],
+    commands: [button],
 });

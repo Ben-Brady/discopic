@@ -1,6 +1,6 @@
 import { runBot, createCommand, reply } from "../src";
 
-const helloCommand = createCommand({
+const ping = createCommand({
     name: "ping",
     description: "Pongs you back",
     async execute({ interaction }) {
@@ -9,5 +9,5 @@ const helloCommand = createCommand({
 });
 
 runBot({
-    commands: [helloCommand],
+    commands: [ping],
 });
