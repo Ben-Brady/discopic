@@ -10,4 +10,4 @@ export { createEmbed } from "./extensions/embed.js";
 export { createModal } from "./extensions/modal.js";
 export { upsertRole } from "./role.js";
 export { createBot, runBot } from "./run.js";
-export { duration } from "./time.js";
+export { duration } from "./utils/time.js";
