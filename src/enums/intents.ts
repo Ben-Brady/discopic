@@ -1,6 +1,7 @@
-import { IntentsBitField } from "discord.js";
+import { IntentsBitField, type GatewayIntentsString } from "discord.js";
 
 export const intentLookup = {
+    guilds: "Guilds",
     guild_members: "GuildMembers",
     guild_moderation: "GuildModeration",
     guild_bans: "GuildBans",
@@ -22,7 +23,7 @@ export const intentLookup = {
     automod_execution: "AutoModerationExecution",
     guild_message_polls: "GuildMessagePolls",
     direct_message_polls: "DirectMessagePolls",
-} as const;
+} as const satisfies Record<string, GatewayIntentsString>;
 
 export type Intent = keyof typeof intentLookup;
 
