@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, type APIMessageComponentEmoji } from "discord.js";
+import { ButtonBuilder, ButtonStyle, Client, type APIMessageComponentEmoji } from "discord.js";
 import { createButtonCallback, type ButtonCallback } from "../interactions/button.js";
 
 const ButtonTypesLookup = {
@@ -21,11 +21,7 @@ export type ButtonSettings = {
     | { type: Exclude<ButtonType, "link">; callback: ButtonCallback }
 );
 
-export function buttonRow(buttons: ButtonSettings[]): ActionRowBuilder<ButtonBuilder> {
-    return new ActionRowBuilder({ components: buttons.map(createButton) });
-}
-
-export function createButton(settings: ButtonSettings): ButtonBuilder {
+export function createButton(client: Client, settings: ButtonSettings): ButtonBuilder {
     const callbackSettings =
         settings.type === "link" ? { url: settings.url } : { custom_id: createButtonCallback(settings.callback) };
 
@@ -36,12 +32,4 @@ export function createButton(settings: ButtonSettings): ButtonBuilder {
         emoji: settings.emoji,
         disabled: settings.disabled,
     });
-}
-
-export function createButtons(...settings: ButtonSettings[]): ActionRowBuilder<ButtonBuilder>[] {
-    return [
-        new ActionRowBuilder<ButtonBuilder>({
-            components: settings.map(button),
-        }),
-    ];
 }

@@ -1,7 +1,7 @@
 import type { Interaction } from "discord.js";
 import { runButtonInteraction } from "./button.js";
 import { runModalSubmitInteraction } from "./modal.js";
-import { runAutocompleteInteraction, runCommandInteraction } from "../commands/interaction.js";
+import { runAutocompleteInteraction, runCommandInteraction } from "./command.js";
 import type { LoggingHandlers } from "../logging/index.js";
 
 export const runInteraction = async ({

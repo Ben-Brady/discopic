@@ -1,20 +1,20 @@
-import { runBot, createCommand, ButtonSettings, reply } from "../src";
+import { runBot, createCommand } from "../src";
 
 const button = createCommand({
     name: "button",
     description: "Creates a button",
-    async execute({ interaction }) {
-        const helloButton = {
+    async execute({ ctx }) {
+        const helloButton = ctx.createButton({
             title: "Hello",
             type: "success",
-            callback: iteraction => {
-                iteraction.reply("Hello There!");
+            callback: ({ interaction }) => {
+                interaction.reply("Hello There!");
             },
-        } satisfies ButtonSettings;
+        });
 
-        await reply(interaction, {
+        await ctx.reply({
             content: "Here's a button",
-            buttons: [helloButton],
+            components: [helloButton],
         });
     },
 });

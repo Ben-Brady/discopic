@@ -1,5 +1,5 @@
 import { REST, Routes, SlashCommandBuilder } from "discord.js";
-import { registerCommand } from "./interaction.js";
+import { registerCommand } from "../interactions/command.js";
 import type { Command, CommandBuilder } from "./types.js";
 import { addOptionToCommand } from "./parameters.js";
 import { getTempStore, setTempStore } from "../utils/store.js";

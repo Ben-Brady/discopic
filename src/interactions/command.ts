@@ -4,9 +4,10 @@ import {
     type ChatInputCommandInteraction,
     type CommandInteraction,
 } from "discord.js";
-import type { Command, CommandParameters, InferParameterObject, Parameter } from "./types.js";
+import type { Command, CommandParameters, InferParameterObject, Parameter } from "../commands/types.js";
 import { createExtendedAttachment } from "../extensions/attachment.js";
 import type { CommandLogger } from "../logging/index.js";
+import { createCommandContext } from "../extensions/context/command.js";
 
 const commandLookup = new Map<string, Command>();
 
@@ -31,9 +32,10 @@ export async function runCommandInteraction(
     }
 
     const parameters = generateCommandCallbackParameters(interaction, command.parameters ?? {});
+    const ctx = createCommandContext(interaction);
 
     try {
-        await command.execute({ interaction, parameters });
+        await command.execute({ interaction, parameters, ctx });
         await logger?.({ interaction, parameters, error: undefined });
     } catch (error) {
         if (error instanceof Error) await handleCommandError({ interaction, parameters, error, logger });

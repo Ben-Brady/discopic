@@ -1,5 +1,5 @@
 import { BaseChannel, Role, User } from "discord.js";
-import { CommandFailedError } from "../commands/interaction.js";
+import { CommandFailedError } from "../interactions/command.js";
 import type { CommandParameters, ParameterType } from "../commands/types.js";
 import type { CommandLogger } from "./index.js";
 

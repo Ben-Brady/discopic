@@ -1,10 +1,10 @@
-import { runBot, createCommand, reply } from "../src";
+import { runBot, createCommand } from "../src";
 
 const ping = createCommand({
     name: "ping",
     description: "Pongs you back",
-    async execute({ interaction }) {
-        reply(interaction, "pong");
+    async execute({ ctx }) {
+        ctx.reply("pong");
     },
 });
 

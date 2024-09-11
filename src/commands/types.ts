@@ -9,6 +9,7 @@ import {
     type User,
 } from "discord.js";
 import type { ExtendedAttachment } from "../extensions/attachment.js";
+import type { CommandContext } from "../extensions/context/command.js";
 
 export type CommandBuilder = Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
 
@@ -21,6 +22,7 @@ export type Command<TParams extends Record<string, Parameter> = Record<string, P
     execute: (response: {
         interaction: CommandInteraction;
         parameters: InferParameterObject<TParams>;
+        ctx: CommandContext;
     }) => Promise<unknown>;
 
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<unknown>;
@@ -129,6 +131,7 @@ export function createCommand<TParams extends Record<string, Parameter>>(command
     execute: (response: {
         interaction: CommandInteraction;
         parameters: InferParameterObject<TParams>;
+        ctx: CommandContext;
     }) => Promise<unknown>;
 
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<unknown>;
