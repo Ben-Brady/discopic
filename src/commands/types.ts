@@ -129,9 +129,9 @@ export function createCommand<TParams extends Record<string, Parameter>>(command
     serverOnly?: boolean;
     parameters?: TParams;
     execute: (response: {
+        ctx: CommandContext;
         interaction: CommandInteraction;
         parameters: InferParameterObject<TParams>;
-        ctx: CommandContext;
     }) => Promise<unknown>;
 
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<unknown>;

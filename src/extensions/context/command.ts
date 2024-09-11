@@ -1,15 +1,14 @@
-import { type CommandInteraction, type Message } from "discord.js";
-import { createButton } from "../buttons.js";
-import type { BaseContext } from "./base.js";
-import { createReply, type MessageOptions } from "../command-context.js";
+import { type CommandInteraction } from "discord.js";
+import { createBaseContext, type BaseContext } from "./base.js";
+import { createReply, type Reply } from "../actions/reply.js";
 
 export type CommandContext = {
-    reply: (message: string | MessageOptions) => Promise<Message>;
+    reply: Reply;
 } & BaseContext;
 
 export const createCommandContext = (interaction: CommandInteraction): CommandContext => {
     return {
         reply: createReply(interaction),
-        createButton: settings => createButton(interaction.client, settings),
+        ...createBaseContext(interaction.client),
     };
 };

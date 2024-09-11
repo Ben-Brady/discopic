@@ -6,8 +6,14 @@ import {
     type Message,
     type MessageActionRowComponentBuilder,
 } from "discord.js";
+import type { StringSelect } from "../selection.js";
 
-type ComponentBuilder = ButtonBuilder;
+export type Reply = (message: string | MessageOptions) => Promise<Message>;
+
+type ComponentBuilder = ButtonBuilder | StringSelect;
+
+const MessageActionRow = ActionRowBuilder<MessageActionRowComponentBuilder>;
+type MessageActionRow = ActionRowBuilder<MessageActionRowComponentBuilder>;
 
 export type MessageOptions = Omit<InteractionReplyOptions, "components"> & {
     components?: ComponentBuilder[] | ComponentBuilder[][];
@@ -32,9 +38,6 @@ export const createReply =
 
         return interaction.reply({ ...replyOptions, fetchReply: true });
     };
-
-const MessageActionRow = ActionRowBuilder<MessageActionRowComponentBuilder>;
-type MessageActionRow = ActionRowBuilder<MessageActionRowComponentBuilder>;
 
 const generateComponents = (components: ComponentBuilder[] | ComponentBuilder[][]): MessageActionRow[] => {
     let componentRows: ComponentBuilder[][];

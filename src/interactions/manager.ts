@@ -1,10 +1,8 @@
 import type * as discord from "discord.js";
 
-type Interaction = discord.ButtonInteraction | discord.ModalSubmitInteraction;
+type Interaction = discord.ButtonInteraction | discord.ModalSubmitInteraction | discord.StringSelectMenuInteraction;
 
-export type InteractionHandler<T extends Interaction = Interaction> = (
-    interaction: T,
-) => void | Promise<void>;
+export type InteractionHandler<T extends Interaction = Interaction> = (interaction: T) => void | Promise<void>;
 
 export class InteractionManger<T extends Interaction> {
     interaction_map: Map<string, InteractionHandler<T>>;
