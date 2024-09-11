@@ -1,11 +1,10 @@
 import { ButtonInteraction } from "discord.js";
-import { InteractionManger } from "./manager.js";
+import { InteractionManger, type InteractionHandler } from "./manager.js";
 
 const interactions = new InteractionManger<ButtonInteraction>();
 
-export type ButtonCallback = (
-    interaction: ButtonInteraction,
-) => void | Promise<void>;
+export type ButtonCallback = (interaction: ButtonInteraction) => void | Promise<void>;
 
-export const runButtonInteraction = interactions.runInteraction;
-export const createButtonCallback = interactions.createCallback;
+export const runButtonInteraction = (interaction: ButtonInteraction) => interactions.runInteraction(interaction);
+export const createButtonCallback = (handler: InteractionHandler<ButtonInteraction>) =>
+    interactions.createCallback(handler);
