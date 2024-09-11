@@ -3,7 +3,7 @@ import { registerCommand } from "./interaction.js";
 import type { Command, CommandBuilder } from "./types.js";
 import { addOptionToCommand } from "./parameters.js";
 import { getTempStore, setTempStore } from "../utils/store.js";
-import { assertValidCommandName, assertValidCommandParameter } from "../verify.js";
+import { validateCommandName, validateCommandParameter } from "../verify.js";
 
 export async function publishSlashCommands({
     token,
@@ -32,7 +32,7 @@ export async function publishSlashCommands({
 function createCommandObject(command: Command): CommandBuilder {
     const commandObj = command.additional_data ?? new SlashCommandBuilder();
 
-    assertValidCommandName(command.name);
+    validateCommandName(command.name);
     commandObj
         .setName(command.name)
         .setDescription(command.description ?? "")
@@ -42,7 +42,7 @@ function createCommandObject(command: Command): CommandBuilder {
     if (command.parameters) {
         const parameters = Object.entries(command.parameters);
         parameters.map(([name]) => {
-            assertValidCommandParameter(name);
+            validateCommandParameter(name);
         });
 
         parameters.forEach(([name, parameter]) => addOptionToCommand(commandObj, name, parameter));
