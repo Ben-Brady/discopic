@@ -14,16 +14,22 @@ export type BotSettings = {
     logging: Partial<LoggingHandlers> | false;
 };
 
+/**
+ * Createa and start your bot
+ */
 export async function runBot(settings: Partial<BotSettings>): Promise<void> {
     const { start } = createBot(settings);
     await start();
 }
 
-export function createBot(initialSettings: Partial<BotSettings>): { start: () => Promise<void>; client: Client } {
-    const settings = generateDefaultSettings(initialSettings);
-    const logging = consturctLogging(settings.logging);
+/**
+ * Initialise a bot, but doesn't start it immediately
+ */
+export function createBot(settings: Partial<BotSettings>): { start: () => Promise<void>; client: Client } {
+    const botSettings = generateDefaultSettings(settings);
+    const logging = consturctLogging(botSettings.logging);
 
-    const { intents, client_id, commands, events, token } = settings;
+    const { intents, client_id, commands, events, token } = botSettings;
 
     const client = new Client({
         intents: intents.map(intoDiscordIntent),
@@ -31,7 +37,7 @@ export function createBot(initialSettings: Partial<BotSettings>): { start: () =>
 
     client.on(Events.InteractionCreate, interaction => runInteraction({ interaction, logging: logging }));
     client.once(Events.ClientReady, client => {
-        if (logging && logging.startup) logging.startup({ client, settings });
+        if (logging && logging.startup) logging.startup({ client, settings: botSettings });
     });
 
     const start = async () => {
