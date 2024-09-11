@@ -1,6 +1,4 @@
-import { Events } from "discord.js";
-import { createBot, runBot } from "../src";
-import { EventCallback } from "../src";
+import { runBot, EventCallback } from "../src";
 
 // You can specify events using EventCallback
 const on_typing: EventCallback<"on_typing"> = typing => {
