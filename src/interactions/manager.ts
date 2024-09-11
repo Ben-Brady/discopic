@@ -2,7 +2,7 @@ import type * as discord from "discord.js";
 
 type Interaction = discord.ButtonInteraction | discord.ModalSubmitInteraction;
 
-type InteractionHandler<T extends Interaction = Interaction> = (
+export type InteractionHandler<T extends Interaction = Interaction> = (
     interaction: T,
 ) => void | Promise<void>;
 
