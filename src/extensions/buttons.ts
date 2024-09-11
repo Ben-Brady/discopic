@@ -22,10 +22,10 @@ export type ButtonSettings = {
 );
 
 export function buttonRow(buttons: ButtonSettings[]): ActionRowBuilder<ButtonBuilder> {
-    return new ActionRowBuilder({ components: buttons.map(button) });
+    return new ActionRowBuilder({ components: buttons.map(createButton) });
 }
 
-export function button(settings: ButtonSettings): ButtonBuilder {
+export function createButton(settings: ButtonSettings): ButtonBuilder {
     const callbackSettings =
         settings.type === "link" ? { url: settings.url } : { custom_id: createButtonCallback(settings.callback) };
 
