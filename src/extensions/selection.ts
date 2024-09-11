@@ -27,7 +27,7 @@ type StringOptionSettings<TLabel extends string, TValue extends string> = {
 
 export type StringSelect = StringSelectMenuBuilder;
 
-export function createStringSelect(client: Client, settings: StringSelectionSettings): StringSelectMenuBuilder {
+export function createStringSelect(client: Client, settings: StringSelectionSettings<any, any>): StringSelect {
     const custom_id = createStringSelectCallback(interaction =>
         settings.onSelect({ interaction, selected: interaction.values, ctx: createSelectContext(client) }),
     );

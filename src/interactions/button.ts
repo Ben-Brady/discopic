@@ -17,6 +17,6 @@ export const createButtonCallback = (handler: ButtonCallback) =>
     interactions.createCallback(interaction => {
         handler({
             interaction,
-            ctx: createButtonContext(interaction),
+            ctx: createButtonContext(interaction.client),
         });
     });
