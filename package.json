@@ -1,6 +1,6 @@
 {
   "name": "discopic",
-  "version": "0.0.2-development",
+  "version": "0.0.3-development",
   "description": "A template for creating npm packages using TypeScript and VSCode",
   "main": "./lib/src/index.js",
   "type": "module",
@@ -19,7 +19,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "discord.js": "^14.16.1",
+    "discopic": "^0.0.2-development",
+    "discord.js": "^14.16.3",
     "tmp": "^0.2.3"
   },
   "devDependencies": {

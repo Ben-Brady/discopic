@@ -119,3 +119,5 @@ dist
 # Compiled code
 lib/
 
+
+.env.*

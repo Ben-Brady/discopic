@@ -35,7 +35,7 @@ export function createBot(settings: Partial<BotSettings>): { start: () => Promis
         intents: intents.map(intoDiscordIntent),
     });
 
-    client.on(Events.InteractionCreate, interaction => runInteraction({ interaction, logging: logging }));
+    client.on(Events.InteractionCreate, async interaction => await runInteraction({ interaction, logging: logging }));
     client.once(Events.ClientReady, client => {
         if (logging && logging.startup) logging.startup({ client, settings: botSettings });
     });

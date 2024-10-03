@@ -1,5 +1,11 @@
 # Discopic
 
+> npm install discopic discord.js
+
+> yarn add discopic discord.js
+
+> bun add discopic discord.js
+
 Note: Commands are loaded client side, if a command hasn't updated try refreshing your discord (Ctrl + R)
 
 ## Enviroment Variables
