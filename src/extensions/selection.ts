@@ -13,7 +13,7 @@ export type StringSelectionSettings<TLabel extends string = string, TValue exten
     disabled?: boolean;
     minValues?: number;
     maxValues?: number;
-    default?: NoInfer<TLabel>;
+    default?: NoInfer<TValue>;
     options: Record<TLabel, TValue> | StringOptionSettings<TLabel, TValue>[];
     onSelect: (_: { ctx: SelectionContext; interaction: StringSelectMenuInteraction; selected: TValue[] }) => void;
 };
@@ -49,7 +49,7 @@ const createStringSelectOptions = (settings: StringSelectionSettings): StringSel
                 new StringSelectMenuOptionBuilder({
                     label,
                     value,
-                    default: label === settings.default,
+                    default: value === settings.default,
                 }),
         );
     }
