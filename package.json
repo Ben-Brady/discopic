@@ -1,6 +1,6 @@
 {
   "name": "discopic",
-  "version": "0.0.5-development",
+  "version": "0.0.6-development",
   "description": "A library for creating discord bots easily",
   "main": "./lib/src/index.js",
   "type": "module",
