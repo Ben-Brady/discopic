@@ -1,0 +1,24 @@
+### Checklist
+
+-   [x] Develop Setup
+    -   [x] --watch
+-   Commands
+
+    -   Subcommands
+    -   [] Creating
+    -   [] Permissions
+    -   [] DM Only
+    -   [] Parameters
+        -   Localisation
+    -   [] Ratelimiting
+    -   [] Replying
+        -   Public
+    -   Followups
+    -   [] Defering
+    -   [] Editting
+    -   Locales
+
+-   Buttons
+    -   Acceptance Filter
+        -   Only you can press it
+-   Select Menus

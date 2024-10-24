@@ -1,6 +1,6 @@
 import { BaseChannel, Role, User } from "discord.js";
 import { CommandFailedError } from "../interactions/command.js";
-import type { CommandParameters, ParameterType } from "../commands/types.js";
+import type { CommandParameters, ParameterType } from "../commands/command.js";
 import type { CommandLogger } from "./index.js";
 
 export const defaultCommandLogger: CommandLogger = ({ interaction, parameters, error }) => {

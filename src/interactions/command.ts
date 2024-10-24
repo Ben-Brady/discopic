@@ -4,7 +4,7 @@ import {
     type ChatInputCommandInteraction,
     type CommandInteraction,
 } from "discord.js";
-import type { Command, CommandParameters, InferParameterObject, Parameter } from "../commands/types.js";
+import type { Command, CommandParameters, InferCommandParameterS, Parameter } from "../commands/command.js";
 import { createExtendedAttachment } from "../extensions/attachment.js";
 import type { CommandLogger } from "../logging/index.js";
 import { createCommandContext } from "../extensions/context/command.js";
@@ -93,7 +93,7 @@ const parameterTypeToDiscordType = (type: Parameter["type"]): ApplicationCommand
 function generateCommandCallbackParameters<T extends Record<string, Parameter>>(
     interaction: CommandInteraction,
     parameters: T,
-): InferParameterObject<T> {
+): InferCommandParameterS<T> {
     const parameter_entries = Object.entries(parameters).map(([name, parameter]) => {
         const isRequired = !parameter.optional;
         const option = interaction.options.get(name, isRequired);
@@ -121,5 +121,5 @@ function generateCommandCallbackParameters<T extends Record<string, Parameter>>(
         throw new Error("Invalid Parameter Type");
     });
 
-    return Object.fromEntries(parameter_entries) as InferParameterObject<T>;
+    return Object.fromEntries(parameter_entries) as InferCommandParameterS<T>;
 }

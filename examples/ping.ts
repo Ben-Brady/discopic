@@ -1,4 +1,4 @@
-import { runBot, createCommand } from "../src";
+import { runBot, createCommand } from "discopic";
 
 const ping = createCommand({
     name: "ping",

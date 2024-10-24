@@ -1,9 +1,6 @@
 import type { ModalActionRowComponentBuilder } from "discord.js";
 import { ActionRowBuilder, ModalBuilder } from "discord.js";
-import {
-    createModalCallback,
-    type ModalCallback,
-} from "../interactions/modal.js";
+import { createModalCallback, type ModalCallback } from "../interactions/modal.js";
 
 type ModalSettings = {
     title: string;
@@ -20,7 +17,5 @@ export function createModal({ title, components, callback }: ModalSettings) {
 }
 
 function createModalRow(component: ModalActionRowComponentBuilder) {
-    return new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-        component,
-    );
+    return new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(component);
 }

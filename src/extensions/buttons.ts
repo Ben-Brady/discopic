@@ -8,7 +8,7 @@ const ButtonTypesLookup = {
     danger: ButtonStyle.Danger,
     link: ButtonStyle.Link,
 } as const;
-type ButtonType = keyof typeof ButtonTypesLookup;
+export type ButtonType = keyof typeof ButtonTypesLookup;
 
 export type ButtonSettings = {
     title: string;

@@ -11,8 +11,6 @@ import {
 import type { ExtendedAttachment } from "../extensions/attachment.js";
 import type { CommandContext } from "../extensions/context/command.js";
 
-export type CommandBuilder = Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
-
 export type Command<TParams extends Record<string, Parameter> = Record<string, Parameter>> = {
     name: string;
     description: string;
@@ -21,12 +19,21 @@ export type Command<TParams extends Record<string, Parameter> = Record<string, P
     parameters: TParams;
     execute: (response: {
         interaction: CommandInteraction;
-        parameters: InferParameterObject<TParams>;
+        parameters: InferCommandParameterS<TParams>;
         ctx: CommandContext;
     }) => Promise<unknown>;
 
+    group?: CommandGroup;
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<unknown>;
-    additional_data?: CommandBuilder;
+    additional_data?: SlashCommandBuilder;
+};
+
+export type CommandGroup = {
+    name: string;
+    description: string;
+    nsfw: boolean;
+    serverOnly: boolean;
+    additional_data?: SlashCommandBuilder;
 };
 
 export type Parameter =
@@ -94,7 +101,7 @@ type ValidParameterChannelTypes =
     | "GuildForum"
     | "GuildMedia";
 
-export type InferParameterOptionality<TParam extends Parameter, TType> = TParam extends {
+export type InferParameterOptionality<TType, TParam extends Parameter> = TParam extends {
     optional: true;
 }
     ? TType | undefined
@@ -118,29 +125,56 @@ export type InferParameterType<T extends Parameter> = T["type"] extends keyof Pa
     ? ParameterInferLookup[T["type"]]
     : never;
 
-export type InferParameterObject<T extends Record<string, Parameter>> = {
-    [Key in keyof T as Key]: InferParameterOptionality<T[Key], InferParameterType<T[Key]>>;
+export type InferCommandParameterS<T extends Record<string, Parameter>> = {
+    [Key in keyof T as Key]: InferParameterOptionality<InferParameterType<T[Key]>, T[Key]>;
 };
 
-export function createCommand<TParams extends Record<string, Parameter>>(command: {
+type CommandSettings<TParams extends Record<string, Parameter>> = {
     name: string;
     description: string;
     nsfw?: boolean;
+    group?: CommandGroup;
     serverOnly?: boolean;
     parameters?: TParams;
     execute: (response: {
         ctx: CommandContext;
         interaction: CommandInteraction;
-        parameters: InferParameterObject<TParams>;
+        parameters: InferCommandParameterS<TParams>;
     }) => Promise<unknown>;
 
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<unknown>;
-    additional_data?: CommandBuilder;
-}): Command<TParams> {
+    additional_data?: SlashCommandBuilder;
+};
+
+/**
+ * Create a command object
+ */
+export function createCommand<TParams extends Record<string, Parameter>>(
+    command: CommandSettings<TParams>,
+): Command<TParams> {
     return {
         nsfw: command.nsfw ?? false,
         serverOnly: command.serverOnly ?? false,
-        parameters: {} as TParams,
+        parameters: command.parameters ?? ({} as TParams),
         ...command,
+    };
+}
+
+type GroupSettings = {
+    name: string;
+    description: string;
+    nsfw?: boolean;
+    serverOnly?: boolean;
+    additional_data?: SlashCommandBuilder;
+};
+
+/**
+ * Create a command group
+ */
+export function createCommandGroup(group: GroupSettings): CommandGroup {
+    return {
+        nsfw: group.nsfw ?? false,
+        serverOnly: group.serverOnly ?? false,
+        ...group,
     };
 }

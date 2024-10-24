@@ -4,10 +4,16 @@ import type { StartupLogger } from "./index.js";
 export const defaultStartupLogger: StartupLogger = ({ client, settings }) => {
     console.log(`Logged in as ${client.user.displayName}!`);
 
-    const commands = settings.commands?.map(v => v.name);
+    const commands = settings.commands;
     if (commands && commands.length > 0) {
         console.log(`${commands.length} application (/) commands:`);
-        commands.forEach(command => console.log(` - /${command}`));
+        commands.forEach(command => {
+            if (command.group) {
+                console.log(` - /${command.group.name}/${command.name}`);
+            } else {
+                console.log(` - /${command.name}`);
+            }
+        });
     }
 
     const events = Object.keys(settings.events);

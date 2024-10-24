@@ -1,6 +1,6 @@
 import type { Client, CommandInteraction } from "discord.js";
 import { defaultCommandLogger } from "./command.js";
-import type { CommandParameters } from "../commands/types.js";
+import type { CommandParameters } from "../commands/command.js";
 import type { BotSettings } from "../run.js";
 import { defaultStartupLogger } from "./startup.js";
 

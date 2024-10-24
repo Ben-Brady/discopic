@@ -6,10 +6,6 @@ If a feature you want to use isn't avaialble, please file an issue and in the me
 
 ## Development
 
-## Templates
-
-TODO: Coming Soon
-
 ### Watch
 
 Discopic is designed with code reloading in mind, which means that your code is automatically reloaded when changed.
@@ -22,26 +18,3 @@ tsc --watch & node --watch dist/index.js
 bun --watch src/index.ts
 ```
 
-
-### Checklist
-- [x] Develop Setup
-    - [x] --watch
-- Commands
-    - Subcommands
-    - Permissions
-    - DM Only
-    - [] Creating
-    - [] Parameters
-        - Localisation
-    - [] Ratelimiting
-    - [] Replying
-        - Public
-    - Followups
-    - [] Defering
-    - [] Editting
-    - Locales
-
-- Buttons
-    - Acceptance Filter
-        - Only you can press it
-- Select Menus
