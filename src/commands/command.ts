@@ -10,6 +10,7 @@ import {
 } from "discord.js";
 import type { ExtendedAttachment } from "../extensions/attachment.js";
 import type { CommandContext } from "../extensions/context/command.js";
+import { type Permission } from "../enums/permissions.js";
 
 export type Command<TParams extends Record<string, Parameter> = Record<string, Parameter>> = {
     name: string;
@@ -33,6 +34,7 @@ export type CommandGroup = {
     description: string;
     nsfw: boolean;
     serverOnly: boolean;
+    permissions?: Permission;
     additional_data?: SlashCommandBuilder;
 };
 
@@ -133,8 +135,10 @@ type CommandSettings<TParams extends Record<string, Parameter>> = {
     name: string;
     description: string;
     nsfw?: boolean;
-    group?: CommandGroup;
     serverOnly?: boolean;
+    permission?: Permission;
+
+    group?: CommandGroup;
     parameters?: TParams;
     execute: (response: {
         ctx: CommandContext;
@@ -165,6 +169,8 @@ type GroupSettings = {
     description: string;
     nsfw?: boolean;
     serverOnly?: boolean;
+    permission?: Permission;
+
     additional_data?: SlashCommandBuilder;
 };
 

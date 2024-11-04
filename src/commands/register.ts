@@ -10,6 +10,7 @@ import type { Command, CommandGroup } from "./command.js";
 import { addOptionToCommand } from "./parameters.js";
 import { getTempStore, setTempStore } from "../utils/store.js";
 import { validateCommandName, validateCommandParameter } from "../verify.js";
+import { intoDiscordPermission } from "../enums/permissions.js";
 
 export type CommandBuilder =
     | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
@@ -97,5 +98,11 @@ function createCommandGroup(command: CommandGroup): SlashCommandBuilder {
         .setDescription(command.description ?? "")
         .setDMPermission(!command.serverOnly)
         .setNSFW(command.nsfw ?? false);
+
+    if (command.permissions) {
+        const permissionBits = intoDiscordPermission(command.permissions);
+        commandObj.setDefaultMemberPermissions(permissionBits);
+    }
+
     return commandObj;
 }
