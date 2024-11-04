@@ -1,6 +1,6 @@
 import { PermissionFlagsBits, type PermissionsString } from "discord.js";
 
-export const permissionLookup: Record<string, keyof typeof PermissionFlagsBits> = {
+export const permissionLookup = {
     create_instant_invite: "CreateInstantInvite",
     kick_members: "KickMembers",
     ban_memebrs: "BanMembers",
@@ -51,11 +51,11 @@ export const permissionLookup: Record<string, keyof typeof PermissionFlagsBits> 
     send_voice_messages: "SendVoiceMessages",
     send_polls: "SendPolls",
     use_external_apps: "UseExternalApps",
-};
+} as const satisfies Record<string, keyof typeof PermissionFlagsBits>;
 
 export type Permission = keyof typeof permissionLookup;
 
 export const intoDiscordPermission = (permission: Permission): PermissionsString => {
-    const flagName = permissionLookup[permission]
-    return flagName
+    const flagName = permissionLookup[permission];
+    return flagName;
 };
