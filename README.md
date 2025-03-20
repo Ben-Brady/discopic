@@ -1,21 +1,36 @@
 # Discopic
 
-> npm install discopic discord.js
+```ts
+import { runBot, createCommand } from "discopic";
 
-> yarn add discopic discord.js
+const ping = createCommand({
+    name: "ping",
+    description: "Pongs you back",
+    async execute({ ctx }) {
+        ctx.reply("pong");
+    },
+});
 
-> bun add discopic discord.js
+runBot({
+    token: "SECRET_TOKEN",
+    client_id: 0800_00_1066,
+    commands: [ping],
+});
+```
 
-Note: Commands are loaded client side, if a command hasn't updated try refreshing your discord (Ctrl + R)
+`npm install discopic discord.js`
+
+
+## Documentation
+
+Coming Soon... (Probably Never)
+
+> Note: Commands are loaded client side, if a command hasn't updated try refreshing your discord (Ctrl + R)
 
 ## Enviroment Variables
 
 Use can use DISCORD_BOT_TOKEN or DISCORD_BOT_CLIENT_ID enviroment variables instead of passing to runBot,
 this helps to keep the confirugation out of your code.
-
-## Bot Introduction
-
-By default the bot will print text to the console whilst setting up, this can be disabled with runBot({introduction: false})
 
 ## Command Error
 
