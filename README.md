@@ -25,7 +25,7 @@ runBot({
 
 Coming Soon... (Probably Never)
 
-> Note: Commands are loaded client side, if a command hasn't updated try refreshing your discord (Ctrl + R)
+> Note: / commands are cached on the client. If a created command doesn't show up, try refreshing your discord client (Ctrl + R)
 
 ## Enviroment Variables
 
