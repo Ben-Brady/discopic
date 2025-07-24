@@ -1,18 +1,19 @@
-import type { ModalActionRowComponentBuilder } from "discord.js";
+import type { Client, ModalActionRowComponentBuilder } from "discord.js";
 import { ActionRowBuilder, ModalBuilder } from "discord.js";
-import { createModalCallback, type ModalCallback } from "../interactions/modal.js";
+import { createModalCallback, ensureInteractionListeners, type ModalCallback } from "../interactions/run.js";
 
-type ModalSettings = {
+export type ModalSettings = {
     title: string;
     components: ModalActionRowComponentBuilder[];
-    callback: ModalCallback;
+    onSubmit: ModalCallback;
 };
 
-export function createModal({ title, components, callback }: ModalSettings) {
+export function createModal(client: Client, { title, components, onSubmit }: ModalSettings) {
+    ensureInteractionListeners(client);
     return new ModalBuilder({
         title,
         components: components.map(createModalRow),
-        custom_id: createModalCallback(callback),
+        custom_id: createModalCallback(onSubmit),
     });
 }
 

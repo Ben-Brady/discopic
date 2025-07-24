@@ -9,7 +9,6 @@ import {
     type User,
 } from "discord.js";
 import type { ExtendedAttachment } from "../extensions/attachment.js";
-import type { CommandContext } from "../extensions/context/command.js";
 import { type Permission } from "../enums/permissions.js";
 
 export type Command<TParams extends Record<string, Parameter> = Record<string, Parameter>> = {
@@ -18,14 +17,10 @@ export type Command<TParams extends Record<string, Parameter> = Record<string, P
     nsfw: boolean;
     serverOnly: boolean;
     parameters: TParams;
-    execute: (response: {
-        interaction: CommandInteraction;
-        parameters: InferCommandParameterS<TParams>;
-        ctx: CommandContext;
-    }) => Promise<unknown>;
+    execute: (interaction: CommandInteraction, parameters: InferCommandParameters<TParams>) => void | Promise<void>;
 
     group?: CommandGroup;
-    autocomplete?: (interaction: AutocompleteInteraction) => Promise<unknown>;
+    autocomplete?: (interaction: AutocompleteInteraction) => void | Promise<void>;
     additional_data?: SlashCommandBuilder;
 };
 
@@ -34,6 +29,7 @@ export type CommandGroup = {
     description: string;
     nsfw: boolean;
     serverOnly: boolean;
+    commands: Command<any>[];
     permissions?: Permission;
     additional_data?: SlashCommandBuilder;
 };
@@ -68,30 +64,10 @@ export type IntegerParameter = BaseParameter & {
 
 export type ChannelParameter = BaseParameter & {
     type: "channel";
-    allowedChannelTypes?: ValidParameterChannelTypes[];
+    allowedChannelTypes?: ChannelType[];
 };
 
-export type BooleanParameter = BaseParameter & {
-    type: "boolean";
-};
-
-export type UserParameter = BaseParameter & {
-    type: "user";
-};
-
-export type RoleParameter = BaseParameter & {
-    type: "role";
-};
-
-export type MentionableParameter = BaseParameter & {
-    type: "mentionable";
-};
-
-export type AttachmentParameter = BaseParameter & {
-    type: "attachment";
-};
-
-type ValidParameterChannelTypes =
+type ChannelType =
     | "GuildText"
     | "GuildVoice"
     | "GuildCategory"
@@ -103,11 +79,11 @@ type ValidParameterChannelTypes =
     | "GuildForum"
     | "GuildMedia";
 
-export type InferParameterOptionality<TType, TParam extends Parameter> = TParam extends {
-    optional: true;
-}
-    ? TType | undefined
-    : TType;
+export type BooleanParameter = BaseParameter & { type: "boolean" };
+export type UserParameter = BaseParameter & { type: "user" };
+export type RoleParameter = BaseParameter & { type: "role" };
+export type MentionableParameter = BaseParameter & { type: "mentionable" };
+export type AttachmentParameter = BaseParameter & { type: "attachment" };
 
 type ParameterInferLookup = {
     boolean: boolean;
@@ -120,18 +96,23 @@ type ParameterInferLookup = {
     attachment: ExtendedAttachment;
 };
 
-export type CommandParameters = Record<string, ParameterType>;
 export type ParameterType = ParameterInferLookup[keyof ParameterInferLookup];
+export type CommandParameters = Record<string, ParameterType>;
 
-export type InferParameterType<T extends Parameter> = T["type"] extends keyof ParameterInferLookup
-    ? ParameterInferLookup[T["type"]]
-    : never;
+type InferParameterType<T extends Parameter> = T extends {
+    optional: true;
+}
+    ? ParameterInferLookup[T["type"]] | undefined
+    : ParameterInferLookup[T["type"]];
 
-export type InferCommandParameterS<T extends Record<string, Parameter>> = {
-    [Key in keyof T as Key]: InferParameterOptionality<InferParameterType<T[Key]>, T[Key]>;
+export type InferCommandParameters<T extends Record<string, Parameter>> = {
+    [Key in keyof T]: InferParameterType<T[Key]>;
 };
 
-type CommandSettings<TParams extends Record<string, Parameter>> = {
+/**
+ * Create a command object
+ */
+export function createCommand<TParams extends Record<string, Parameter>>(settings: {
     name: string;
     description: string;
     nsfw?: boolean;
@@ -140,47 +121,37 @@ type CommandSettings<TParams extends Record<string, Parameter>> = {
 
     group?: CommandGroup;
     parameters?: TParams;
-    execute: (response: {
-        ctx: CommandContext;
-        interaction: CommandInteraction;
-        parameters: InferCommandParameterS<TParams>;
-    }) => Promise<unknown>;
+    execute: (interaction: CommandInteraction, parameters: InferCommandParameters<TParams>) => Promise<void> | void;
+    autocomplete?: (interaction: AutocompleteInteraction) => Promise<void> | void;
 
-    autocomplete?: (interaction: AutocompleteInteraction) => Promise<unknown>;
     additional_data?: SlashCommandBuilder;
-};
-
-/**
- * Create a command object
- */
-export function createCommand<TParams extends Record<string, Parameter>>(
-    command: CommandSettings<TParams>,
-): Command<TParams> {
+}): Command<TParams> {
     return {
-        nsfw: command.nsfw ?? false,
-        serverOnly: command.serverOnly ?? false,
-        parameters: command.parameters ?? ({} as TParams),
-        ...command,
+        nsfw: settings.nsfw ?? false,
+        serverOnly: settings.serverOnly ?? false,
+        parameters: settings.parameters ?? ({} as TParams),
+        ...settings,
     };
 }
 
-type GroupSettings = {
+/**
+ * Create a command group
+ */
+export function createCommandGroup(settings: {
     name: string;
     description: string;
+    commands: Command[];
     nsfw?: boolean;
     serverOnly?: boolean;
     permission?: Permission;
 
     additional_data?: SlashCommandBuilder;
-};
-
-/**
- * Create a command group
- */
-export function createCommandGroup(group: GroupSettings): CommandGroup {
-    return {
-        nsfw: group.nsfw ?? false,
-        serverOnly: group.serverOnly ?? false,
-        ...group,
+}): CommandGroup {
+    const group = {
+        nsfw: settings.nsfw ?? false,
+        serverOnly: settings.serverOnly ?? false,
+        ...settings,
     };
+    group.commands.forEach(v => (v.group = group));
+    return group;
 }

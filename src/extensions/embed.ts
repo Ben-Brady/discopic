@@ -27,5 +27,5 @@ const generateFields = (fields: APIEmbed["fields"] | Record<string, string>): AP
 };
 
 export type EmbedSettings = Omit<APIEmbed, "fields"> & {
-    fields: APIEmbed["fields"] | Record<string, string>;
+    fields?: APIEmbed["fields"] | Record<string, string>;
 };

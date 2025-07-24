@@ -1,7 +1,11 @@
-import { BaseChannel, Role, User } from "discord.js";
-import { CommandFailedError } from "../interactions/command.js";
-import type { CommandParameters, ParameterType } from "../commands/command.js";
-import type { CommandLogger } from "./index.js";
+import { BaseChannel, CommandInteraction, Role, User } from "discord.js";
+import type { CommandParameters, ParameterType } from "./command.js";
+
+export type CommandLogger = (config: {
+    interaction: CommandInteraction;
+    parameters: CommandParameters;
+    error?: unknown;
+}) => void;
 
 export const defaultCommandLogger: CommandLogger = ({ interaction, parameters, error }) => {
     const command = interaction.commandName;
@@ -13,9 +17,6 @@ export const defaultCommandLogger: CommandLogger = ({ interaction, parameters, e
 
     if (!error) {
         console.log(`${timestamp}: /${command}${parameterString} executed by ${name} in ${server}`);
-    } else if (error instanceof CommandFailedError) {
-        const message = error.message.replace("\n", "\\n");
-        console.error(`${timestamp}: /${command}${parameterString} failed due to "${message}" by ${name} in ${server}`);
     } else {
         console.error(`${timestamp}: /${command}${parameterString} failed by ${name} in ${server} due to`);
         console.error(error);

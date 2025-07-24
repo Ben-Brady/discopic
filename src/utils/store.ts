@@ -1,12 +1,14 @@
 import { readFileSync, writeFileSync } from "fs";
-import { tmpdir } from "os";
 import crypto from "node:crypto";
 import path from "path";
+import { existsSync, mkdirSync } from "node:fs";
+
+const TMP_DIR = ".discopic";
 
 const generatePath = (key: string) => {
     const hash = crypto.createHash("sha256").update(key).digest("base64");
     const filename = `discopic-${hash.slice(0, 16)}`;
-    return path.join(tmpdir(), filename);
+    return path.join(TMP_DIR, filename);
 };
 
 export const getTempStore = (key: string): string | undefined => {
@@ -20,5 +22,7 @@ export const getTempStore = (key: string): string | undefined => {
 
 export const setTempStore = (key: string, value: string) => {
     const filepath = generatePath(key);
+
+    if (!existsSync(TMP_DIR)) mkdirSync(TMP_DIR, { recursive: true });
     writeFileSync(filepath, value);
 };

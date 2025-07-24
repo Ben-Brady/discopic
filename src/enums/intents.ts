@@ -27,6 +27,8 @@ export const intentLookup = {
 
 export type Intent = keyof typeof intentLookup;
 
-export const intoDiscordIntent = (intent: Intent): IntentsBitField => {
+const intoDiscordIntent = (intent: Intent): IntentsBitField => {
     return new IntentsBitField(intentLookup[intent]);
 };
+
+export const createIntents = (...intents: Intent[]) => intents.map(intoDiscordIntent);

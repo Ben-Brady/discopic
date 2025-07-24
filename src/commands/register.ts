@@ -25,8 +25,6 @@ export async function publishSlashCommands({
     client_id: string;
     commands: Command<any>[];
 }) {
-    commands.forEach(registerCommand);
-
     const rest = new REST({ version: "10" }).setToken(token);
     const body = createCommandsBody(commands);
 
@@ -38,7 +36,12 @@ export async function publishSlashCommands({
         await rest.put(Routes.applicationCommands(client_id), { body });
         setTempStore(storeKey, uploadJson);
     }
+
+    for (const cmd of commands) {
+        registerCommand(cmd);
+    }
 }
+
 function createCommandsBody(commands: Command[]): (CommandBuilder | SlashCommandSubcommandsOnlyBuilder)[] {
     const groupLookup = Object.fromEntries(
         commands

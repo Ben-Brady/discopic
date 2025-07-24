@@ -1,0 +1,1 @@
+- make `createBot({commands: [group]})` be valid

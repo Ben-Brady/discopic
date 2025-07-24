@@ -2,12 +2,10 @@ import {
     ApplicationCommandOptionType,
     type AutocompleteInteraction,
     type ChatInputCommandInteraction,
-    type CommandInteraction,
 } from "discord.js";
-import type { Command, CommandParameters, InferCommandParameterS, Parameter } from "../commands/command.js";
+import type { Command, InferCommandParameters, Parameter } from "../commands/command.js";
 import { createExtendedAttachment } from "../extensions/attachment.js";
-import type { CommandLogger } from "../logging/index.js";
-import { createCommandContext } from "../extensions/context/command.js";
+import type { CommandLogger } from "../commands/logger.js";
 
 const commandLookup = new Map<string, Command>();
 
@@ -15,54 +13,23 @@ export const registerCommand = (command: Command) => {
     commandLookup.set(command.name, command);
 };
 
-export class CommandFailedError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "CommandFailedError";
-    }
-}
-
 export async function runCommandInteraction(
     interaction: ChatInputCommandInteraction,
     logger: CommandLogger | undefined,
 ) {
     const command = commandLookup.get(interaction.commandName);
-    if (!command) {
-        throw new Error(`/${interaction.commandName} not found`);
-    }
+    if (!command) throw new Error(`/${interaction.commandName} not found`);
 
     const parameters = generateCommandCallbackParameters(interaction, command.parameters ?? {});
-    const ctx = createCommandContext(interaction);
 
     try {
-        await command.execute({ interaction, parameters, ctx });
-        await logger?.({ interaction, parameters, error: undefined });
-    } catch (error) {
-        if (error instanceof Error) await handleCommandError({ interaction, parameters, error, logger });
-        throw error;
+        await command.execute(interaction, parameters);
+        logger?.({ interaction, parameters, error: undefined });
+    } catch (err) {
+        logger?.({ interaction, parameters, error: err });
+        console.error(err);
     }
 }
-
-const handleCommandError = async ({
-    interaction,
-    parameters,
-    error,
-    logger,
-}: {
-    interaction: ChatInputCommandInteraction;
-    parameters: CommandParameters;
-    error: Error | undefined;
-    logger: CommandLogger | undefined;
-}) => {
-    if (error instanceof CommandFailedError) {
-        await interaction.reply({
-            content: error.message,
-            ephemeral: true,
-        });
-    }
-
-    logger?.({ interaction, parameters, error });
-};
 
 export async function runAutocompleteInteraction(interaction: AutocompleteInteraction) {
     const command = commandLookup.get(interaction.commandName);
@@ -91,9 +58,9 @@ const parameterTypeToDiscordType = (type: Parameter["type"]): ApplicationCommand
 };
 
 function generateCommandCallbackParameters<T extends Record<string, Parameter>>(
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     parameters: T,
-): InferCommandParameterS<T> {
+): InferCommandParameters<T> {
     const parameter_entries = Object.entries(parameters).map(([name, parameter]) => {
         const isRequired = !parameter.optional;
         const option = interaction.options.get(name, isRequired);
@@ -121,5 +88,5 @@ function generateCommandCallbackParameters<T extends Record<string, Parameter>>(
         throw new Error("Invalid Parameter Type");
     });
 
-    return Object.fromEntries(parameter_entries) as InferCommandParameterS<T>;
+    return Object.fromEntries(parameter_entries) as InferCommandParameters<T>;
 }

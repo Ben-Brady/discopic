@@ -1,5 +1,5 @@
 import { ButtonBuilder, ButtonStyle, Client, type APIMessageComponentEmoji } from "discord.js";
-import { createButtonCallback, type ButtonCallback } from "../interactions/button.js";
+import { createButtonCallback, ensureInteractionListeners, type ButtonCallback } from "../interactions/run.js";
 
 const ButtonTypesLookup = {
     primary: ButtonStyle.Primary,
@@ -18,12 +18,13 @@ export type ButtonSettings = {
 } & (
     | { type: "link"; url: string }
     // Callback is required for all button types except "link"
-    | { type: Exclude<ButtonType, "link">; callback: ButtonCallback }
+    | { type: Exclude<ButtonType, "link">; onClick: ButtonCallback }
 );
 
 export function createButton(client: Client, settings: ButtonSettings): ButtonBuilder {
+    ensureInteractionListeners(client);
     const callbackSettings =
-        settings.type === "link" ? { url: settings.url } : { custom_id: createButtonCallback(settings.callback) };
+        settings.type === "link" ? { url: settings.url } : { custom_id: createButtonCallback(settings.onClick) };
 
     return new ButtonBuilder({
         ...callbackSettings,

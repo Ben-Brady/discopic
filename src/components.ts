@@ -1,12 +1,16 @@
-import { ActionRowBuilder, ButtonBuilder, type MessageActionRowComponentBuilder } from "discord.js";
-import type { StringSelect } from "../extensions/selection.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    StringSelectMenuBuilder,
+    type MessageActionRowComponentBuilder,
+} from "discord.js";
 
-type ComponentBuilder = ButtonBuilder | StringSelect;
+type ComponentBuilder = ButtonBuilder | StringSelectMenuBuilder;
 
 const MessageActionRow = ActionRowBuilder<MessageActionRowComponentBuilder>;
 type MessageActionRow = ActionRowBuilder<MessageActionRowComponentBuilder>;
 
-export const generateComponents = (components: ComponentBuilder[] | ComponentBuilder[][]): MessageActionRow[] => {
+export const createComponents = (components: ComponentBuilder[] | ComponentBuilder[][]): MessageActionRow[] => {
     let componentRows: ComponentBuilder[][];
 
     if (Array.isArray(components[0])) {

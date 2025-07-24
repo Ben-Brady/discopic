@@ -1,24 +1,34 @@
-import type { Interaction } from "discord.js";
-import type { LoggingHandlers } from "../logging/index.js";
-import { runButtonInteraction } from "./button.js";
-import { runModalSubmitInteraction } from "./modal.js";
-import { runAutocompleteInteraction, runCommandInteraction } from "./command.js";
-import { runStringSelectInteraction } from "./selection.js";
+import type { ButtonInteraction, Client, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js";
+import { getDiscopicInternals } from "../internals.js";
+import { createInteractionManger } from "./manager.js";
 
-export const runInteraction = async ({
-    interaction,
-    logging,
-}: {
-    interaction: Interaction;
-    logging: LoggingHandlers;
-}) => {
-    try {
-        if (interaction.isButton()) await runButtonInteraction(interaction);
-        if (interaction.isModalSubmit()) await runModalSubmitInteraction(interaction);
-        if (interaction.isChatInputCommand()) await runCommandInteraction(interaction, logging.command || undefined);
-        if (interaction.isAutocomplete()) await runAutocompleteInteraction(interaction);
-        if (interaction.isStringSelectMenu()) await runStringSelectInteraction(interaction);
-    } catch {
-        /* empty */
-    }
+export type ModalCallback = (interaction: ModalSubmitInteraction) => void | Promise<void>;
+const modalManager = createInteractionManger<ModalSubmitInteraction>();
+const runModalSubmitInteraction = modalManager.runInteraction;
+export const createModalCallback = modalManager.createCallback;
+
+export type ButtonCallback = (interaction: ButtonInteraction) => void | Promise<void>;
+const buttonManager = createInteractionManger<ButtonInteraction>();
+const runButtonInteraction = buttonManager.runInteraction;
+export const createButtonCallback = buttonManager.createCallback;
+
+const stringSelectManager = createInteractionManger<StringSelectMenuInteraction>();
+const runStringSelectInteraction = stringSelectManager.runInteraction;
+export const createStringSelectCallback = stringSelectManager.createCallback;
+
+export const ensureInteractionListeners = (client: Client) => {
+    const internals = getDiscopicInternals(client);
+    if (internals.attachedListeners) return;
+
+    internals.attachedListeners = true;
+    client.on("interactionCreate", interaction => {
+        try {
+            if (interaction.isButton()) runButtonInteraction(interaction);
+            if (interaction.isModalSubmit()) runModalSubmitInteraction(interaction);
+            if (interaction.isStringSelectMenu()) runStringSelectInteraction(interaction);
+        } catch (e) {
+            console.error(e);
+            /* empty */
+        }
+    });
 };
