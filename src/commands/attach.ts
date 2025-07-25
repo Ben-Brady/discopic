@@ -20,8 +20,12 @@ export function attachSlashCommands(
     commands = commands.toSorted((a, b) => a.name.localeCompare(b.name));
 
     client.on("interactionCreate", async interaction => {
-        if (interaction.isAutocomplete()) runAutocompleteInteraction(interaction);
-        if (interaction.isChatInputCommand()) runCommandInteraction(interaction, logging);
+        try {
+            if (interaction.isAutocomplete()) runAutocompleteInteraction(interaction);
+            if (interaction.isChatInputCommand()) runCommandInteraction(interaction, logging);
+        } catch (e) {
+            console.error(e);
+        }
     });
 
     client.on("ready", async () => {
@@ -35,7 +39,7 @@ export function attachSlashCommands(
         });
 
         if (commands.length > 0) {
-            console.log(`${commands.length} application (/) commands:`);
+            console.log(`Attached ${commands.length} application (/) commands:`);
             commands.forEach(command => {
                 if (command.group) {
                     console.log(` - /${command.group.name}/${command.name}`);

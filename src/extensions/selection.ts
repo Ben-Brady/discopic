@@ -8,16 +8,17 @@ import {
 import { createStringSelectCallback, ensureInteractionListeners } from "../interactions/run.js";
 
 export type StringSelectionSettings<TLabel extends string = string, TValue extends string = string> = {
+    options: Record<TLabel, TValue> | StringOptionSettings<TLabel, TValue>[];
+    onSelect: (interaction: StringSelectMenuInteraction) => void;
+
+    defaultValue?: TValue | TValue[];
     placeholder?: string;
     disabled?: boolean;
     minValues?: number;
     maxValues?: number;
-    default?: TValue;
-    options: Record<TLabel, TValue> | StringOptionSettings<TLabel, TValue>[];
-    onSelect: (interaction: StringSelectMenuInteraction) => void;
 };
 
-type StringOptionSettings<TLabel extends string, TValue extends string> = {
+export type StringOptionSettings<TLabel extends string, TValue extends string> = {
     label: TLabel;
     value: TValue;
     description?: string;
@@ -42,13 +43,20 @@ export function createStringSelect(
 }
 
 const createStringSelectOptions = (settings: StringSelectionSettings): StringSelectMenuOptionBuilder[] => {
+    const defaultValues =
+        settings.defaultValue === undefined
+            ? []
+            : Array.isArray(settings.defaultValue)
+              ? settings.defaultValue
+              : [settings.defaultValue];
+
     if (!Array.isArray(settings.options)) {
         return Object.entries(settings.options).map(
             ([label, value]) =>
                 new StringSelectMenuOptionBuilder({
                     label,
                     value,
-                    default: value === settings.default,
+                    default: defaultValues.includes(value),
                 }),
         );
     }
@@ -60,7 +68,7 @@ const createStringSelectOptions = (settings: StringSelectionSettings): StringSel
                 value: option.value,
                 description: option.description,
                 emoji: option.emoji,
-                default: option.isDefault || option.value === settings.default,
+                default: option.isDefault || defaultValues.includes(option.value),
             }),
     );
 };

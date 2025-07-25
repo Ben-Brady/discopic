@@ -7,32 +7,44 @@ import type { Command, InferCommandParameters, Parameter } from "../commands/com
 import { createExtendedAttachment } from "../extensions/attachment.js";
 import type { CommandLogger } from "../commands/logger.js";
 
-const commandLookup = new Map<string, Command>();
+const commands: Command[] = [];
 
 export const registerCommand = (command: Command) => {
-    commandLookup.set(command.name, command);
+    commands.push(command);
 };
 
 export async function runCommandInteraction(
     interaction: ChatInputCommandInteraction,
     logger: CommandLogger | undefined,
 ) {
-    const command = commandLookup.get(interaction.commandName);
-    if (!command) throw new Error(`/${interaction.commandName} not found`);
+    const command = getCommand(interaction);
 
+    if (!command) {
+        const error = new Error(`/${interaction.commandName} not found`);
+        attempt(() => logger?.({ interaction, parameters: {}, error }));
+        return;
+    }
     const parameters = generateCommandCallbackParameters(interaction, command.parameters ?? {});
 
     try {
         await command.execute(interaction, parameters);
-        logger?.({ interaction, parameters, error: undefined });
+        attempt(() => logger?.({ interaction, parameters, error: undefined }));
     } catch (err) {
-        logger?.({ interaction, parameters, error: err });
+        attempt(() => logger?.({ interaction, parameters, error: err }));
         console.error(err);
     }
 }
 
+const attempt = (callback: () => void) => {
+    try {
+        callback();
+    } catch (e) {
+        console.error(e);
+    }
+};
+
 export async function runAutocompleteInteraction(interaction: AutocompleteInteraction) {
-    const command = commandLookup.get(interaction.commandName);
+    const command = getCommand(interaction);
 
     if (command?.autocomplete === undefined) {
         throw new Error(`Autocomplete function not set for /${interaction.commandName}`);
@@ -41,6 +53,19 @@ export async function runAutocompleteInteraction(interaction: AutocompleteIntera
     await command.autocomplete(interaction);
 }
 
+function getCommand(interaction: ChatInputCommandInteraction | AutocompleteInteraction): Command | undefined {
+    const command = commands.find(({ name, group }) => {
+        const commandName = interaction.commandName;
+        if (group) {
+            const subcommand = interaction.options.getSubcommand();
+            return group.name === commandName && name === subcommand;
+        } else {
+            return name === commandName;
+        }
+    });
+
+    return command;
+}
 const parameterTypeToDiscordType = (type: Parameter["type"]): ApplicationCommandOptionType => {
     const lookup = {
         string: ApplicationCommandOptionType.String,

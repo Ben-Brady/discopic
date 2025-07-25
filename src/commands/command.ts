@@ -54,6 +54,7 @@ export type StringParameter = BaseParameter & {
     type: "string";
     minLength?: number;
     maxLength?: number;
+    autocomplete?: boolean;
 };
 
 export type IntegerParameter = BaseParameter & {
@@ -96,17 +97,21 @@ type ParameterInferLookup = {
     attachment: ExtendedAttachment;
 };
 
-export type ParameterType = ParameterInferLookup[keyof ParameterInferLookup];
 export type CommandParameters = Record<string, ParameterType>;
+export type ParameterType = ParameterInferLookup[keyof ParameterInferLookup];
 
-type InferParameterType<T extends Parameter> = T extends {
+export type InferParameterType<T extends Parameter> = T["type"] extends keyof ParameterInferLookup
+    ? ParameterInferLookup[T["type"]]
+    : never;
+
+export type InferParameterOptionality<TType, TParam extends Parameter> = TParam extends {
     optional: true;
 }
-    ? ParameterInferLookup[T["type"]] | undefined
-    : ParameterInferLookup[T["type"]];
+    ? TType | undefined
+    : TType;
 
 export type InferCommandParameters<T extends Record<string, Parameter>> = {
-    [Key in keyof T]: InferParameterType<T[Key]>;
+    [Key in keyof T as Key]: InferParameterOptionality<InferParameterType<T[Key]>, T[Key]>;
 };
 
 /**
@@ -125,13 +130,13 @@ export function createCommand<TParams extends Record<string, Parameter>>(setting
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<void> | void;
 
     additional_data?: SlashCommandBuilder;
-}): Command<TParams> {
+}): Command {
     return {
         nsfw: settings.nsfw ?? false,
         serverOnly: settings.serverOnly ?? false,
         parameters: settings.parameters ?? ({} as TParams),
         ...settings,
-    };
+    } as unknown as Command;
 }
 
 /**

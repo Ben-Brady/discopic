@@ -59,6 +59,7 @@ const bindStringOption = (command: CommandBuilder, name: string, parameter: Stri
     command.addStringOption(option => {
         if (parameter.minLength !== undefined) option.setMinLength(parameter.minLength);
         if (parameter.maxLength !== undefined) option.setMaxLength(parameter.maxLength);
+        if (parameter.autocomplete) option.setAutocomplete(true);
 
         applyGenericOptionMetadata(option, name, parameter);
         return option;
