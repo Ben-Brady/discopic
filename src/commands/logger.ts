@@ -1,25 +1,25 @@
 import { BaseChannel, CommandInteraction, Role, User } from "discord.js";
-import type { CommandParameters, ParameterType } from "./command.js";
+import type { Command, CommandParameters, ParameterType } from "./command.js";
 
 export type CommandLogger = (config: {
+    command: Command;
     interaction: CommandInteraction;
     parameters: CommandParameters;
     error?: unknown;
 }) => void;
 
-export const defaultCommandLogger: CommandLogger = ({ interaction, parameters, error }) => {
-    const command = interaction.commandName;
-    const server = interaction?.guild?.name ?? "DM";
-    const name = interaction.user.displayName;
+export const defaultCommandLogger: CommandLogger = ({ command, interaction, parameters, error }) => {
     const timestamp = new Date().toISOString();
+    const username = interaction.user.displayName;
+    const server = interaction?.guild?.name ?? "DM";
 
     const parameterString = serializeParameters(parameters);
 
+    const path = command.group ? `/${command.group.name}/${command.name}` : `/${command.name}`;
     if (!error) {
-        console.log(`${timestamp}: /${command}${parameterString} executed by ${name} in ${server}`);
+        console.log(`${timestamp}: ${path}${parameterString} executed by ${username} in ${server}`);
     } else {
-        console.error(`${timestamp}: /${command}${parameterString} failed by ${name} in ${server}`);
-        console.error(error);
+        console.error(`${timestamp}: ${path}${parameterString} failed by ${username} in ${server}`);
     }
 };
 

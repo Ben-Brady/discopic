@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import { type Command, type CommandGroup, publishSlashCommands } from "./index.js";
-import { runAutocompleteInteraction, runCommandInteraction } from "../interactions/command.js";
+import { runAutocompleteInteraction, runCommandInteraction } from "./interaction.js";
 import { defaultCommandLogger, type CommandLogger } from "./logger.js";
 
 export function attachSlashCommands(
@@ -33,6 +33,7 @@ export function attachSlashCommands(
         if (!client.user) throw new Error("Client has not bot associated with it");
 
         await publishSlashCommands({
+            client,
             token: client.token,
             client_id: client.user.id,
             commands,

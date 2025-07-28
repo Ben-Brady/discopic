@@ -1,16 +1,17 @@
 import {
     ApplicationCommandOptionType,
+    Client,
     type AutocompleteInteraction,
     type ChatInputCommandInteraction,
 } from "discord.js";
-import type { Command, InferCommandParameters, Parameter } from "../commands/command.js";
+import type { Command, InferCommandParameters, Parameter } from "./command.js";
 import { createExtendedAttachment } from "../extensions/attachment.js";
-import type { CommandLogger } from "../commands/logger.js";
+import type { CommandLogger } from "./logger.js";
+import { getDiscopicInternals } from "../internals.js";
 
-const commands: Command[] = [];
-
-export const registerCommand = (command: Command) => {
-    commands.push(command);
+export const registerCommand = (client: Client, command: Command) => {
+    const internals = getDiscopicInternals(client);
+    internals.commands.push(command);
 };
 
 export async function runCommandInteraction(
@@ -18,20 +19,15 @@ export async function runCommandInteraction(
     logger: CommandLogger | undefined,
 ) {
     const command = getCommand(interaction);
+    if (!command) return;
 
-    if (!command) {
-        const error = new Error(`/${interaction.commandName} not found`);
-        attempt(() => logger?.({ interaction, parameters: {}, error }));
-        return;
-    }
     const parameters = generateCommandCallbackParameters(interaction, command.parameters ?? {});
 
     try {
         await command.execute(interaction, parameters);
-        attempt(() => logger?.({ interaction, parameters, error: undefined }));
+        attempt(() => logger?.({ command, interaction, parameters, error: undefined }));
     } catch (err) {
-        attempt(() => logger?.({ interaction, parameters, error: err }));
-        console.error(err);
+        attempt(() => logger?.({ command, interaction, parameters, error: err }));
     }
 }
 
@@ -54,6 +50,8 @@ export async function runAutocompleteInteraction(interaction: AutocompleteIntera
 }
 
 function getCommand(interaction: ChatInputCommandInteraction | AutocompleteInteraction): Command | undefined {
+    const { commands } = getDiscopicInternals(interaction.client);
+
     const command = commands.find(({ name, group }) => {
         const commandName = interaction.commandName;
         if (group) {
@@ -66,6 +64,7 @@ function getCommand(interaction: ChatInputCommandInteraction | AutocompleteInter
 
     return command;
 }
+
 const parameterTypeToDiscordType = (type: Parameter["type"]): ApplicationCommandOptionType => {
     const lookup = {
         string: ApplicationCommandOptionType.String,

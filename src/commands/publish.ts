@@ -1,11 +1,12 @@
 import {
+    Client,
     REST,
     Routes,
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     type SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
-import { registerCommand } from "../interactions/command.js";
+import { registerCommand } from "./interaction.js";
 import type { Command, CommandGroup } from "./command.js";
 import { addOptionToCommand } from "./parameters.js";
 import { getTempStore, setTempStore } from "../utils/store.js";
@@ -16,15 +17,14 @@ export type CommandBuilder =
     | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
     | SlashCommandSubcommandBuilder;
 
-export async function publishSlashCommands({
-    token,
-    client_id,
-    commands,
-}: {
+export async function publishSlashCommands(settings: {
+    client: Client;
     token: string;
     client_id: string;
     commands: Command<any>[];
 }) {
+    const { client, token, client_id, commands } = settings;
+
     const rest = new REST({ version: "10" }).setToken(token);
     const body = createCommandsBody(commands);
 
@@ -38,7 +38,7 @@ export async function publishSlashCommands({
     }
 
     for (const cmd of commands) {
-        registerCommand(cmd);
+        registerCommand(client, cmd);
     }
 }
 

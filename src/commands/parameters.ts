@@ -9,7 +9,7 @@ import type {
     UserParameter,
 } from "./command.js";
 import { intoDiscordChannelType } from "../enums/channelType.js";
-import type { CommandBuilder } from "./register.js";
+import type { CommandBuilder } from "./publish.js";
 
 export function addOptionToCommand<T extends CommandBuilder>(command: T, name: string, parameter: Parameter) {
     const lookup = {
