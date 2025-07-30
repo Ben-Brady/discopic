@@ -21,8 +21,8 @@ export function attachSlashCommands(
 
     client.on("interactionCreate", async interaction => {
         try {
-            if (interaction.isAutocomplete()) runAutocompleteInteraction(interaction);
-            if (interaction.isChatInputCommand()) runCommandInteraction(interaction, logging);
+            if (interaction.isAutocomplete()) await runAutocompleteInteraction(interaction);
+            if (interaction.isChatInputCommand()) await runCommandInteraction(interaction, logging);
         } catch (e) {
             console.error(e);
         }

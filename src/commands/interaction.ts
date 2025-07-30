@@ -55,7 +55,7 @@ function getCommand(interaction: ChatInputCommandInteraction | AutocompleteInter
     const command = commands.find(({ name, group }) => {
         const commandName = interaction.commandName;
         if (group) {
-            const subcommand = interaction.options.getSubcommand();
+            const subcommand = interaction.options.getSubcommand(false);
             return group.name === commandName && name === subcommand;
         } else {
             return name === commandName;
